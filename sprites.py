@@ -9,7 +9,13 @@ running5 = pg.image.load('images/playerrun5.png')
 running6 = pg.image.load('images/playerrun6.png')
 running7 = pg.image.load('images/playerrun7.png')
 running8 = pg.image.load('images/playerrun8.png')
+player_image = pg.image.load("images/player.png")
+player1=pg.image.load("images/player1.png")
+enemy_image = pg.image.load("images/enemy.png")
+ranged_image = pg.image.load("images/lasanga.png")
+background = pg.image.load("images/background")
 
+background = pg.transform.scale(background,(1024,560))
 running = pg.transform.scale(running,(35,35))
 running2 = pg.transform.scale(running2,(35,35))
 running3 = pg.transform.scale(running3,(35,35))
@@ -18,12 +24,8 @@ running5 = pg.transform.scale(running5,(35,35))
 running6 = pg.transform.scale(running6,(35,35))
 running7 = pg.transform.scale(running7,(35,35))
 running8 = pg.transform.scale(running8,(35,35))
-player_image = pg.image.load("images/player.png")
-player1=pg.image.load("images/player1.png")
 player1=pg.transform.scale(player1,(35,35))
 player_imageimage = pg.transform.scale(player_image,(35,35))
-enemy_image = pg.image.load("images/enemy.png")
-ranged_image = pg.image.load("images/lasanga.png")
 ranged_imageimage = pg.transform.scale(ranged_image,(30,30))
 
 class Player(pg.sprite.Sprite):
@@ -47,7 +49,7 @@ class Player(pg.sprite.Sprite):
     def take_dmg(self, dmg):
         self.hp -= dmg 
         if self.hp <= 0:
-            self.kill()
+            pg.quit()
 
     def attack(self):
         projectile = ranged_attack(self.pos_x, self.pos_y,self.enemies)

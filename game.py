@@ -9,7 +9,7 @@ RED = (255,0,0)
 GREEN = (0,255,0)
 YELLOW = (255,255,0)
 
-screen = pg.display.set_mode((800,600)) # lager spill vindu, 800x600
+screen = pg.display.set_mode((1024,560)) # lager spill vindu, 800x600
 clock = pg.time.Clock()
 font_times40 = pg.font.SysFont("Times New Roman",20)
 
@@ -46,7 +46,7 @@ while playing: # game loop
 
     hp_text = font_times40.render(f"HP: {player.hp}", False ,(GREEN))
     # tegn bakgrunn og alle sprites
-    screen.fill(BLACK)
+    screen.blit(background,(0,0))
     all_sprites.draw(screen)
     screen.blit(hp_text,(10,10))
     pg.display.update()
