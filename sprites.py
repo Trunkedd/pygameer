@@ -13,7 +13,7 @@ player_image = pg.image.load("images/player.png")
 player1=pg.image.load("images/player1.png")
 enemy_image = pg.image.load("images/enemy.png")
 ranged_image = pg.image.load("images/lasanga.png")
-background = pg.image.load("images/background")
+background = pg.image.load("images/bg.png")
 
 background = pg.transform.scale(background,(1024,560))
 running = pg.transform.scale(running,(35,35))
@@ -45,6 +45,8 @@ class Player(pg.sprite.Sprite):
         self.hp = 100
         self.all_sprites = all_sprites
         self.enemies = enemies
+        
+
 
     def take_dmg(self, dmg):
         self.hp -= dmg 
@@ -63,8 +65,12 @@ class Player(pg.sprite.Sprite):
         self.rect.centery = self.pos_y
         self.standing = True
         
-        if self.pos_x > 900:
-            self.pos_x = 900
+        
+        if self.pos_y > 560:
+            self.pos_y = 560
+        if self.pos_y < 200:
+            self.pos_y = 200
+        
         
        
 
@@ -108,9 +114,9 @@ class Enemy(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self)
         self.image = enemy_image
         self.rect = self.image.get_rect()
-        self.pos_x = 900
-        self.pos_y = random.randint(0,600)
-        self.speed = random.randint(1,5)
+        self.pos_x = 1200
+        self.pos_y = random.randint(200,560)
+        self.speed = random.randint(3,5)
 
     def update(self):
         self.rect.centerx = self.pos_x

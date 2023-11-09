@@ -1,4 +1,5 @@
 import pygame as pg
+import math
 from sprites import *
 import random
 pg.init() # starter pygame modul
@@ -10,6 +11,9 @@ GREEN = (0,255,0)
 YELLOW = (255,255,0)
 
 screen = pg.display.set_mode((1024,560)) # lager spill vindu, 800x600
+WIDTH = 1024
+
+
 clock = pg.time.Clock()
 font_times40 = pg.font.SysFont("Times New Roman",20)
 
@@ -20,7 +24,7 @@ enemies = pg.sprite.Group()
 player = Player(all_sprites,enemies) # lager 1 kopi av Player class
 all_sprites.add(player) # legg til player i gruppen
 
-
+i = 0
 playing = True
 while playing: # game loop
     clock.tick(120)
@@ -46,7 +50,12 @@ while playing: # game loop
 
     hp_text = font_times40.render(f"HP: {player.hp}", False ,(GREEN))
     # tegn bakgrunn og alle sprites
-    screen.blit(background,(0,0))
+    screen.blit(background,(i,0))
+    screen.blit(background,(WIDTH+i,0))
+    if (i == -WIDTH):
+        screen.blit(background,(WIDTH+i,0))
+        i=0
+    i-=1
     all_sprites.draw(screen)
     screen.blit(hp_text,(10,10))
     pg.display.update()
