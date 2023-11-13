@@ -12,7 +12,7 @@ running8 = pg.image.load('images/playerrun8.png')
 player_image = pg.image.load("images/player.png")
 player1=pg.image.load("images/player1.png")
 enemy_image = pg.image.load("images/enemy.png")
-ranged_image = pg.image.load("images/lasanga.png")
+ranged_image = pg.image.load("images/ranged.png")
 background = pg.image.load("images/bg.png")
 
 background = pg.transform.scale(background,(1024,560))
@@ -45,6 +45,8 @@ class Player(pg.sprite.Sprite):
         self.hp = 100
         self.all_sprites = all_sprites
         self.enemies = enemies
+        self.cooldown = 0
+        self.maxcooldown = 20
         
 
 
@@ -54,9 +56,11 @@ class Player(pg.sprite.Sprite):
             pg.quit()
 
     def attack(self):
-        projectile = ranged_attack(self.pos_x, self.pos_y,self.enemies)
-        print("attacked")
-        projectile.add(self.all_sprites)
+        if self.cooldown <= 0:
+            projectile = ranged_attack(self.pos_x, self.pos_y,self.enemies)
+            print("attacked")
+            projectile.add(self.all_sprites)
+            self.cooldown = 25
         
 
     def update(self):
@@ -64,7 +68,7 @@ class Player(pg.sprite.Sprite):
         self.rect.centerx = self.pos_x
         self.rect.centery = self.pos_y
         self.standing = True
-        
+        self.cooldown -= 1
         
         if self.pos_y > 560:
             self.pos_y = 560
@@ -110,13 +114,14 @@ class Player(pg.sprite.Sprite):
                 self.rect=self.image.get_rect()
 
 class Enemy(pg.sprite.Sprite):
-    def __init__(self): # denne funksjonen kjører når vi lager player
+    def __init__(self, player): # denne funksjonen kjører når vi lager player
         pg.sprite.Sprite.__init__(self)
         self.image = enemy_image
         self.rect = self.image.get_rect()
         self.pos_x = 1200
         self.pos_y = random.randint(200,560)
         self.speed = random.randint(3,5)
+        self.player = player
 
     def update(self):
         self.rect.centerx = self.pos_x
@@ -124,6 +129,12 @@ class Enemy(pg.sprite.Sprite):
         self.pos_x -= self.speed
         if self.pos_x < -10:
             self.kill()
+        
+
+        if self.pos_y > self.player.pos_y:
+            self.pos_y -= 1
+        if self.pos_y < self.player.pos_y:
+            self.pos_y += 1
 class ranged_attack(pg.sprite.Sprite):
     def __init__(self,x,y,enemies):
         pg.sprite.Sprite.__init__(self)

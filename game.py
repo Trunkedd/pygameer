@@ -36,7 +36,7 @@ while playing: # game loop
 
     # spawning av flere players
     if len(enemies) < 10:
-        new_enemy = Enemy()
+        new_enemy = Enemy(player)
         all_sprites.add(new_enemy)
         enemies.add(new_enemy)
 
