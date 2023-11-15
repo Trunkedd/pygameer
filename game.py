@@ -33,7 +33,7 @@ while playing: # game loop
         if event.type == pg.QUIT: # hvis vi trykker pÃ¥ krysset i spillvinduet
             playing = False
             pg.quit()
-
+  
     # spawning av flere players
     if len(enemies) < 10:
         new_enemy = Enemy(player)
@@ -42,7 +42,7 @@ while playing: # game loop
 
     # oppdater alle sprites i all_sprites gruppen
     all_sprites.update()
-
+     
     hits = pg.sprite.spritecollide(player, enemies, True)
     if hits:
         player.take_dmg(10)
