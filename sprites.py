@@ -10,18 +10,18 @@ running6 = pg.image.load('images/playerrun6.png')
 running7 = pg.image.load('images/playerrun7.png')
 running8 = pg.image.load('images/playerrun8.png')
 player_image = pg.image.load("images/idle.png")
-player1=pg.image.load("images/idle1.png")
-player2=pg.image.load("images/idle2.png")
-player3=pg.image.load("images/idle3.png")
-player4=pg.image.load("images/idle4.png")
-player5=pg.image.load("images/idle5.png")
-player6=pg.image.load("images/idle6.png")
-player7=pg.image.load("images/idle7.png")
-attack1=pg.image.load("images/attack1")
-attack2=pg.image.load("images/attack2")
-attack3=pg.image.load("images/attack3")
-attack4=pg.image.load("images/attack4")
-attack5=pg.image.load("images/attack5")
+player1 = pg.image.load("images/idle1.png")
+player2 = pg.image.load("images/idle2.png")
+player3 = pg.image.load("images/idle3.png")
+player4 = pg.image.load("images/idle4.png")
+player5 = pg.image.load("images/idle5.png")
+player6 = pg.image.load("images/idle6.png")
+player7 = pg.image.load("images/idle7.png")
+attack1 = pg.image.load("images/attack1.png")
+attack2 = pg.image.load("images/attack2.png")
+attack3 = pg.image.load("images/attack3.png")
+attack4 = pg.image.load("images/attack4.png")
+attack5 = pg.image.load("images/attack5.png")
 enemy_image = pg.image.load("images/enemy.png")
 ranged_image = pg.image.load("images/ranged.png")
 background = pg.image.load("images/bg.png")
@@ -58,7 +58,7 @@ class Player(pg.sprite.Sprite):
         self.last_update = 0
         self.standing = True
         self.running = False
-        self.attacking = False
+        self.is_melee = False
         self.image = player_imageimage
         self.rect = self.image.get_rect()
         self.attack_cooldown = 0
@@ -79,11 +79,14 @@ class Player(pg.sprite.Sprite):
     def take_dmg(self, dmg):
         self.hp -= dmg 
         if self.hp <= 0:
-            pg.quit()
+            pass
     def melee(self):
         if self.attack_cooldown == 0:
-            self.attack_cooldown = 30
-            return meleeattack(self.rect.center, self.enemies)
+            self.attack_cooldown = 1
+            meleeprojectile = meleeattack(self.rect.center,self.enemies)
+            meleeprojectile.add(self.all_sprites)
+            self.is_melee = True
+            return meleeprojectile
     def attack(self):
         if self.cooldown <= 0:
             projectile = ranged_attack(self.pos_x, self.pos_y,self.enemies)
@@ -114,29 +117,28 @@ class Player(pg.sprite.Sprite):
             self.pos_y -= self.speed
             self.standing=False
             self.running=True
-            self.attack=False
+            self.melee = False
         if keys[pg.K_s]: # nedover
             self.pos_y += self.speed
             self.standing=False
             self.running=True
-            self.attack=False
+            self.melee = False
         if keys[pg.K_a]: # venstre
             self.pos_x -= self.speed
             self.standing=False
             self.running=True
-            self.attack=False
+            self.melee = False
         if keys[pg.K_d]: # høyre
             self.pos_x += self.speed 
             self.standing=False
             self.running=True
-            self.attack=False
+            self.melee = False
         if keys[pg.K_f]:
             self.attack()
         if keys[pg.K_SPACE]:
-            self.melee()
-            self.standing=False
-            self.running=False
-            self.attack=True
+            melee
+            
+            
     def animate(self):
         now = pg.time.get_ticks()
         if self.standing:
@@ -145,12 +147,23 @@ class Player(pg.sprite.Sprite):
                 self.current_frame =(self.current_frame +1)%len(self.standing_frames)
                 self.image = self.standing_frames[self.current_frame]
                 self.rect=self.image.get_rect()
+        self.standing = False
         if self.running:
             if now - self.last_update > 350:
                 self.last_update = now
                 self.current_frame = (self.current_frame +1)%len(self.running_frames)
                 self.image = self.running_frames[self.current_frame]
                 self.rect=self.image.get_rect()
+
+        self.running = False
+        if self.is_melee:
+            if now - self.last_update > 350:
+                self.last_update = now
+                self.current_frame = (self.current_frame + 1) % len(self.attack_frames)
+                self.image = self.attack_frames[self.current_frame]
+                self.rect=self.image.get_rect()
+
+        self.is_melee = False
 
 class Enemy(pg.sprite.Sprite):
     def __init__(self, player): # denne funksjonen kjører når vi lager player
@@ -175,9 +188,9 @@ class Enemy(pg.sprite.Sprite):
         if self.pos_y < self.player.pos_y:
             self.pos_y += 1
 class meleeattack(pg.sprite.Sprite):
-    def __init__(self, position,enemies):
+    def __init__(self, position,enemies,):
         super().__init__()
-        self.image = pg.Surface((40,30))
+        self.image = pg.Surface((60,30))
         self.image.fill((0,255,0))
         self.rect = self.image.get_rect(center=position)
         self.lifetime = 10
