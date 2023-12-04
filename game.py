@@ -21,16 +21,15 @@ all_sprites = pg.sprite.Group()
 enemies = pg.sprite.Group()
 
 
-player = Player(all_sprites,enemies) # lager 1 kopi av Player class
-all_sprites.add(player) # legg til player i gruppen
+player = Player(all_sprites,enemies)
+all_sprites.add(player)
 
 i = 0
 playing = True
 while playing: # game loop
     clock.tick(120)
-    #print("FPS: ", i)
     for event in pg.event.get():
-        if event.type == pg.QUIT: # hvis vi trykker pÃ¥ krysset i spillvinduet
+        if event.type == pg.QUIT: 
             playing = False
             pg.quit()
   
@@ -43,7 +42,8 @@ while playing: # game loop
     # oppdater alle sprites i all_sprites gruppen
     all_sprites.update()
      
-    hits = pg.sprite.spritecollide(player, enemies, True)
+     # collision
+    hits = pg.sprite.spritecollide(player, enemies,True)
     if hits:
         player.take_dmg(10)
         print(player.hp)

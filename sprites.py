@@ -23,6 +23,11 @@ attack3 = pg.image.load("images/attack3.png")
 attack4 = pg.image.load("images/attack4.png")
 attack5 = pg.image.load("images/attack5.png")
 enemy_image = pg.image.load("images/enemy.png")
+enemy_image1 = pg.image.load("images/enemy1.png")
+enemy_image2 = pg.image.load("images/enemy2.png")
+enemy_image3 = pg.image.load("images/enemy3.png")
+enemy_image4 = pg.image.load("images/enemy4.png")
+enemy_image5 = pg.image.load("images/enemy5.png")
 ranged_image = pg.image.load("images/ranged.png")
 background = pg.image.load("images/bg.png")
 
@@ -76,16 +81,20 @@ class Player(pg.sprite.Sprite):
         
 
 
-    def take_dmg(self, dmg):
+    def take_dmg(self,dmg):
         self.hp -= dmg 
         if self.hp <= 0:
-            pass
-    def melee(self):
+            pg.quit()
+            print("you died")
+            
+    def meleeattacking(self):
         if self.attack_cooldown == 0:
             self.attack_cooldown = 1
             meleeprojectile = meleeattack(self.rect.center,self.enemies)
             meleeprojectile.add(self.all_sprites)
             self.is_melee = True
+            self.standing=False
+            self.running=False
             return meleeprojectile
     def attack(self):
         if self.cooldown <= 0:
@@ -117,26 +126,26 @@ class Player(pg.sprite.Sprite):
             self.pos_y -= self.speed
             self.standing=False
             self.running=True
-            self.melee = False
+            self.is_melee = False
         if keys[pg.K_s]: # nedover
             self.pos_y += self.speed
             self.standing=False
             self.running=True
-            self.melee = False
+            self.is_melee = False
         if keys[pg.K_a]: # venstre
             self.pos_x -= self.speed
             self.standing=False
             self.running=True
-            self.melee = False
+            self.is_melee = False
         if keys[pg.K_d]: # høyre
             self.pos_x += self.speed 
             self.standing=False
             self.running=True
-            self.melee = False
+            self.is_melee = False
         if keys[pg.K_f]:
             self.attack()
         if keys[pg.K_SPACE]:
-            melee
+            self.meleeattacking()
             
             
     def animate(self):
@@ -147,7 +156,7 @@ class Player(pg.sprite.Sprite):
                 self.current_frame =(self.current_frame +1)%len(self.standing_frames)
                 self.image = self.standing_frames[self.current_frame]
                 self.rect=self.image.get_rect()
-        self.standing = False
+        
         if self.running:
             if now - self.last_update > 350:
                 self.last_update = now
@@ -155,30 +164,35 @@ class Player(pg.sprite.Sprite):
                 self.image = self.running_frames[self.current_frame]
                 self.rect=self.image.get_rect()
 
-        self.running = False
+        
         if self.is_melee:
-            if now - self.last_update > 350:
+            if now - self.last_update > 100:
                 self.last_update = now
                 self.current_frame = (self.current_frame + 1) % len(self.attack_frames)
                 self.image = self.attack_frames[self.current_frame]
                 self.rect=self.image.get_rect()
 
-        self.is_melee = False
-
+        
 class Enemy(pg.sprite.Sprite):
     def __init__(self, player): # denne funksjonen kjører når vi lager player
         pg.sprite.Sprite.__init__(self)
+        self.enemies= True
+        self.current_frame = 0
+        self.last_update = 0
         self.image = enemy_image
         self.rect = self.image.get_rect()
+        self.enemies_frames = [enemy_image,enemy_image1,enemy_image2,enemy_image3,enemy_image4,enemy_image5]
         self.pos_x = 1200
         self.pos_y = random.randint(0,560)
         self.speed = random.randint(3,5)
         self.player = player
 
     def update(self):
+        self.animate()
         self.rect.centerx = self.pos_x
         self.rect.centery = self.pos_y
         self.pos_x -= self.speed
+        self.enemies = True
         if self.pos_x < -10:
             self.kill()
         
@@ -187,11 +201,21 @@ class Enemy(pg.sprite.Sprite):
             self.pos_y -= 1
         if self.pos_y < self.player.pos_y:
             self.pos_y += 1
+    def animate(self):
+        now = pg.time.get_ticks()
+        if self.enemies:
+            if now - self.last_update > 100:
+                self.last_update = now
+                self.current_frame = (self.current_frame +1)%len(self.enemies_frames)
+                self.image = self.enemies_frames[self.current_frame]
+                self.rect=self.image.get_rect()
+
 class meleeattack(pg.sprite.Sprite):
     def __init__(self, position,enemies,):
         super().__init__()
         self.image = pg.Surface((60,30))
         self.image.fill((0,255,0))
+        self.image.set_colorkey((0,255,0))
         self.rect = self.image.get_rect(center=position)
         self.lifetime = 10
         self.rect.right += 35
@@ -201,6 +225,8 @@ class meleeattack(pg.sprite.Sprite):
         if self.lifetime <= 0:
             self.kill()
         hits =pg.sprite.spritecollide(self,self.enemies, True)
+
+
 class ranged_attack(pg.sprite.Sprite):
     def __init__(self,x,y,enemies):
         pg.sprite.Sprite.__init__(self)
